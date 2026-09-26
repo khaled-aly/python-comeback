@@ -1,4 +1,4 @@
-
+import json
 class Job:
     def __init__(self, company, salary, location, remote=False):
         self.company = company
@@ -8,7 +8,7 @@ class Job:
     def __str__(self):
         return f"{self.company} | {self.salary} | {self.location} | {self.remote}"
     def is_suitable(self, minimum_salary, location, remote):
-        return self.salary >= minimum_salary and self.location == location and self.remote==remote
+        return self.salary >= minimum_salary and self.location == location and self.remote == remote
 
     def to_dict(self):
         return {
@@ -17,6 +17,33 @@ class Job:
             "location": self.location,
             "remote": self.remote
         }
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            data["company"],
+            data["salary"],
+            data["location"],
+            data["remote"]
+        )
+    
+def save_jobs(jobs):
+    job_data = [job.to_dict() for job in jobs]
+
+    with open("jobs.json", "w") as file:
+        json.dump(job_data, file, indent=4)
+
+def load_jobs():
+    try:
+        with open("jobs.json", "r") as file:
+            data = json.load(file)
+
+        jobs = []
+        for job_data in data:
+            job = Job.from_dict(job_data)
+            jobs.append(job)
+        return jobs
+    except FileNotFoundError:
+        return []
 
 def get_job_details():
     company = input("enter company name: ")
@@ -41,7 +68,12 @@ def get_job_details():
 
     job = Job(company, salary, location, remote) 
     return job
-jobs = []
+
+
+jobs = load_jobs()
+
+for job in jobs:
+    print(job)
 
 while True:
     print("1. Add job")
@@ -54,14 +86,20 @@ while True:
     if choice == "1":
         new_job = get_job_details()
         jobs.append(new_job)
+        save_jobs(jobs)
     elif choice == "2":
         if not jobs:
             print("No Jobs found.")
         else:
             for job in jobs:
-                print(job.to_dict())
+                print(job)
     elif choice == "3":
-        minimum_salary = int(input("Minimum salary: "))
+        while True:
+            try:
+                minimum_salary = int(input("Minimum salary: "))
+                break
+            except ValueError:
+                print("Please enter a valid number")
         location = input("Location: ")
         while True:
             remote_input = input("is this job remote True/False: ").lower()
