@@ -1,0 +1,50 @@
+[
+    {
+        "company": "Apple",
+        "salary": 65000,
+        "location": "London",
+        "remote": true
+    },
+    {
+        "company": "Meta",
+        "salary": 80000,
+        "location": "London",
+        "remote": true
+    },
+    {
+        "company": "Yoto",
+        "salary": 55000,
+        "location": "London",
+        "remote": false
+    },
+    {
+        "company": "Barclays",
+        "salary": 60000,
+        "location": "Manchester",
+        "remote": true
+    },
+    {
+        "company": "Google",
+        "salary": 90000,
+        "location": "London",
+        "remote": false
+    },
+    {
+        "company": "Amazon",
+        "salary": 88000,
+        "location": "Brighton",
+        "remote": false
+    },
+    {
+        "company": "Samsung",
+        "salary": 99000,
+        "location": "New York",
+        "remote": true
+    },
+    {
+        "company": "Huawei",
+        "salary": 49000,
+        "location": "China",
+        "remote": false
+    }
+]
