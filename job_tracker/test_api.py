@@ -237,3 +237,68 @@ def test_update_job(monkeypatch):
     assert data["remote"] is True
 
     assert updated_ids == [(5, 90000)]
+
+def test_search_jobs(monkeypatch):
+    test_jobs = [
+        Job(
+            "Apple",
+            72000,
+            "London",
+            True,
+            job_id=5
+        ),
+        Job(
+            "Google",
+            80000,
+            "London",
+            True,
+            job_id=6
+        )
+    ]
+
+    def fake_search_jobs(minimum_salary, location, remote):
+        assert minimum_salary == 70000
+        assert location == "London"
+        assert remote is True
+
+        return test_jobs
+
+    monkeypatch.setattr(
+        "api.db_search_jobs",
+        fake_search_jobs
+    )
+
+    response = client.get(
+        "/jobs/search"
+        "?minimum_salary=70000"
+        "&location=London"
+        "&remote=true"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 2
+    assert data[0]["id"] == 5
+    assert data[0]["company"] == "Apple"
+    assert data[1]["id"] == 6
+    assert data[1]["company"] == "Google"
+
+def test_search_jobs_invalid_salary():
+    response = client.get(
+        "/jobs/search"
+        "?minimum_salary=hello"
+        "&location=London"
+        "&remote=true"
+    )
+
+    assert response.status_code == 422
+
+    data = response.json()
+
+    assert data["detail"][0]["type"] == "int_parsing"
+    assert data["detail"][0]["loc"] == [
+        "query",
+        "minimum_salary"
+    ]

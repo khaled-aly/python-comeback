@@ -7,7 +7,8 @@ from db import (
     get_job,
     create_job as db_create_job,
     update_job as db_update_job,
-    delete_job as db_delete_job
+    delete_job as db_delete_job,
+    search_jobs as db_search_jobs
 )
 
 app = FastAPI()
@@ -36,6 +37,13 @@ def home():
 def get_all_jobs():
     return db_get_jobs()
 
+@app.get("/jobs/search", response_model=list[JobResponse])
+def search_jobs(
+    minimum_salary: int,
+    location: str,
+    remote: bool
+):
+    return db_search_jobs(minimum_salary, location, remote)
 
 @app.get("/jobs/{job_id}", response_model=JobResponse)
 def get_single_job(job_id: int):
@@ -88,3 +96,4 @@ def create_job(job: JobCreate):
         remote=job.remote
     )
     return db_create_job(new_job)
+

@@ -123,6 +123,33 @@ def delete_job(job_id:int):
     connection.commit()
     connection.close()
 
+def search_jobs(minimum_salary: int, location: str, remote: bool) -> list[Job]:
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT id, company, salary, location, remote
+        FROM jobs
+        WHERE salary >= ? AND location = ? AND remote = ?
+    """, (minimum_salary, location, remote))
+
+    rows = cursor.fetchall()
+
+    connection.close()
+
+    jobs = []
+
+    for row in rows:
+        job = Job(
+            company=row[1],
+            salary=row[2],
+            location=row[3],
+            remote=bool(row[4]),
+            job_id=row[0]
+        )
+        jobs.append(job)
+
+    return jobs
 if __name__ == "__main__":
     create_tables()
     
