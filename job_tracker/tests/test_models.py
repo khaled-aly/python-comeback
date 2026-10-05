@@ -29,7 +29,6 @@ def test_job_not_suitable_remote(apple_job):
     assert apple_job.is_suitable(60000, "London", False) is False
 
 def test_job_to_dict(apple_job):
-
     result = apple_job.to_dict()
 
     assert result == {
@@ -39,6 +38,17 @@ def test_job_to_dict(apple_job):
         "remote": True
     }
 
+def test_job_id():
+    job = Job(
+        "Apple",
+        65000,
+        "London",
+        True,
+        job_id=5
+    )
+
+    assert job.id == 5
+    
 def test_job_from_dict():
     data = {
         "company": "Apple",

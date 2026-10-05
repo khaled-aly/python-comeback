@@ -1,11 +1,13 @@
 class Job:
     def __init__(
         self,
-        company:str,
-        salary:int,
+        company: str,
+        salary: int,
         location: str,
-        remote: bool = False
-        ):
+        remote: bool = False,
+        job_id: int | None = None
+    ):
+        self.id = job_id
         self.company = company
         self.salary = salary
         self.location = location
@@ -15,11 +17,11 @@ class Job:
         return f"{self.company} | {self.salary} | {self.location} | {self.remote}"
 
     def is_suitable(
-        self, 
-        minimum_salary: int, 
-        location: str, 
+        self,
+        minimum_salary: int,
+        location: str,
         remote: bool
-        ) -> bool:
+    ) -> bool:
         return (
             self.salary >= minimum_salary
             and self.location == location
@@ -37,8 +39,8 @@ class Job:
     @classmethod
     def from_dict(cls, data: dict[str, object]) -> "Job":
         return cls(
-            data["company"],
-            data["salary"],
-            data["location"],
-            data["remote"]
+            company=data["company"],
+            salary=data["salary"],
+            location=data["location"],
+            remote=data["remote"]
         )
