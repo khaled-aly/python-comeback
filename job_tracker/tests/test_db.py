@@ -1,29 +1,24 @@
 import pytest
-
-from db import (
-    create_tables,
-    create_job,
-    get_jobs,
-    get_job,
-    update_job,
-    delete_job
-)
+import db
 from models import Job
 
 
 @pytest.fixture
-def test_database(tmp_path, monkeypatch):
-    database_path = tmp_path / "test_jobs.db"
-
+def test_database(monkeypatch):
     monkeypatch.setattr(
-        "db.DATABASE",
-        str(database_path)
+        "db.DATABASE_URL",
+        "postgresql://khaledaly@localhost/job_tracker_test"
     )
 
-    create_tables()
+    db.create_tables()
 
-    return database_path
+    yield
 
+    connection = db.get_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM jobs")
+    connection.commit()
+    connection.close()
 
 def test_create_job(test_database):
     job = Job(
@@ -33,9 +28,9 @@ def test_create_job(test_database):
         True
     )
 
-    create_job(job)
+    db.create_job(job)
 
-    jobs = get_jobs()
+    jobs = db.get_jobs()
 
     assert len(jobs) == 1
     assert jobs[0].company == "Apple"
@@ -43,6 +38,13 @@ def test_create_job(test_database):
     assert jobs[0].location == "London"
     assert jobs[0].remote is True
 
+
+
+
+def test_get_job_not_found(test_database):
+    result = db.get_job(999)
+
+    assert result is None
 
 def test_get_job(test_database):
     job = Job(
@@ -52,23 +54,14 @@ def test_get_job(test_database):
         True
     )
 
-    create_job(job)
+    db.create_job(job)
 
-    jobs = get_jobs()
-    job_id = 1
-
-    result = get_job(job_id)
+    result = db.get_job(job.id)
 
     assert result is not None
-    assert result.id == 1
+    assert result.id == job.id
     assert result.company == "Google"
     assert result.salary == 80000
-
-
-def test_get_job_not_found(test_database):
-    result = get_job(999)
-
-    assert result is None
 
 
 def test_update_job(test_database):
@@ -79,11 +72,11 @@ def test_update_job(test_database):
         True
     )
 
-    create_job(job)
+    db.create_job(job)
 
-    update_job(1, 90000)
+    db.update_job(job.id, 90000)
 
-    result = get_job(1)
+    result = db.get_job(job.id)
 
     assert result is not None
     assert result.salary == 90000
@@ -97,10 +90,10 @@ def test_delete_job(test_database):
         True
     )
 
-    create_job(job)
+    db.create_job(job)
 
-    delete_job(1)
+    db.delete_job(job.id)
 
-    result = get_job(1)
+    result = db.get_job(job.id)
 
     assert result is None
