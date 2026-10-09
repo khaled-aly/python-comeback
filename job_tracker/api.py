@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 from models import Job
 from db import (
+    create_tables,
     get_jobs as db_get_jobs,
     get_job,
     create_job as db_create_job,
@@ -12,6 +13,8 @@ from db import (
 )
 
 app = FastAPI()
+
+create_tables()
 
 class JobResponse(BaseModel):
     id: int

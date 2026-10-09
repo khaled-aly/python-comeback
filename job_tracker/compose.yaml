@@ -1,0 +1,22 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: "postgresql://khaledaly:postgres@db/job_tracker"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: khaledaly
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: job_tracker
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U khaledaly -d job_tracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
