@@ -1,3 +1,4 @@
+import os
 import pytest
 import db
 from models import Job
@@ -5,20 +6,20 @@ from models import Job
 
 @pytest.fixture
 def test_database(monkeypatch):
-    monkeypatch.setattr(
-        "db.DATABASE_URL",
+    database_url = os.getenv(
+        "TEST_DATABASE_URL",
         "postgresql://khaledaly@localhost/job_tracker_test"
     )
+
+    monkeypatch.setattr("db.DATABASE_URL", database_url)
 
     db.create_tables()
 
     yield
 
-    connection = db.get_connection()
-    cursor = connection.cursor()
-    cursor.execute("DELETE FROM jobs")
-    connection.commit()
-    connection.close()
+    with db.get_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM jobs")
 
 def test_create_job(test_database):
     job = Job(
