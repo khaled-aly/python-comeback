@@ -12,7 +12,8 @@ def test_home():
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": "Job Tracker API is running"
+    "message": "Job Tracker API is running",
+    "version": "1.0.1",
     }
 
 
