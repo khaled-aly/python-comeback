@@ -33,7 +33,7 @@ class JobCreate(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "Job Tracker API is running"}
+    return {"message": "Job Tracker API is running", "version": "1.0.1"}
 
 
 @app.get("/jobs", response_model=list[JobResponse])
